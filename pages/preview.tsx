@@ -3,19 +3,27 @@ import { useEffect, useState } from "react";
 import { artworks, Artwork } from "@/data/artworks";
 import dynamic from "next/dynamic";
 
-// Konva SSR এ কাজ করে না, তাই dynamic import
 const WallCanvas = dynamic(() => import("@/components/WallCanvas"), {
   ssr: false,
-  loading: () => (
+  loading: () => <CanvasLoader />,
+});
+
+const AIWallCanvas = dynamic(() => import("@/components/AIWallCanvas"), {
+  ssr: false,
+  loading: () => <CanvasLoader />,
+});
+
+function CanvasLoader() {
+  return (
     <div className="flex items-center justify-center h-96 bg-gray-900 rounded-xl">
       <p className="text-gray-400">Canvas loading...</p>
     </div>
-  ),
-});
+  );
+}
 
 export default function PreviewPage() {
   const router = useRouter();
-  const { artworkId } = router.query;
+  const { artworkId, mode } = router.query;
   const [artwork, setArtwork] = useState<Artwork | null>(null);
   const [wallImage, setWallImage] = useState<string | null>(null);
 
@@ -42,6 +50,8 @@ export default function PreviewPage() {
     );
   }
 
+  const isAiMode = mode === "ai";
+
   return (
     <main className="min-h-screen bg-gray-950 text-white">
       {/* Header */}
@@ -52,22 +62,31 @@ export default function PreviewPage() {
         >
           ← Back
         </button>
-        <div>
-          <h1 className="font-bold text-lg">{artwork.title}</h1>
-          <p className="text-gray-400 text-sm">{artwork.artist}</p>
+        <div className="flex items-center gap-3">
+          <div>
+            <h1 className="font-bold text-lg">{artwork.title}</h1>
+            <p className="text-gray-400 text-sm">{artwork.artist}</p>
+          </div>
+          {isAiMode && (
+            <span className="bg-indigo-600 text-white text-xs px-2 py-1 rounded-full">
+              🤖 AI Mode
+            </span>
+          )}
         </div>
       </div>
 
       <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
-        {/* Wall Upload Section */}
+        {/* Wall Upload */}
         {!wallImage && (
           <div className="border-2 border-dashed border-gray-700 rounded-xl p-10 text-center hover:border-indigo-500 transition-colors">
-            <p className="text-4xl mb-3">📷</p>
+            <p className="text-4xl mb-3">{isAiMode ? "🤖" : "📷"}</p>
             <p className="text-gray-300 font-medium mb-1">
               Upload your wall photo
             </p>
             <p className="text-gray-500 text-sm mb-5">
-              Take a photo of your wall and upload it here
+              {isAiMode
+                ? "AI will automatically detect your wall and place the artwork"
+                : "You can manually position the artwork by dragging corner points"}
             </p>
             <label className="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-lg cursor-pointer transition-colors">
               Choose Photo
@@ -81,16 +100,20 @@ export default function PreviewPage() {
           </div>
         )}
 
-        {/* Canvas Section */}
+        {/* Canvas — mode অনুযায়ী আলাদা component */}
         {wallImage && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="font-semibold text-gray-200">
-                  Position the artwork on your wall
+                  {isAiMode
+                    ? "🤖 AI is placing the artwork on your wall..."
+                    : "Position the artwork on your wall"}
                 </h2>
                 <p className="text-gray-500 text-sm mt-1">
-                  Drag the corner points to fit the artwork on your wall
+                  {isAiMode
+                    ? "AI automatically detects the best position"
+                    : "Drag the corner points to fit the artwork"}
                 </p>
               </div>
               <button
@@ -101,28 +124,14 @@ export default function PreviewPage() {
               </button>
             </div>
 
-            <WallCanvas wallImage={wallImage} artwork={artwork} />
+            {/* Mode অনুযায়ী component */}
+            {isAiMode ? (
+              <AIWallCanvas wallImage={wallImage} artwork={artwork} />
+            ) : (
+              <WallCanvas wallImage={wallImage} artwork={artwork} />
+            )}
           </div>
         )}
-
-        {/* Instructions */}
-        <div className="bg-gray-900 rounded-xl p-5 border border-gray-800">
-          <h3 className="font-medium text-gray-300 mb-3">How to use</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm text-gray-400">
-            <div className="flex gap-2">
-              <span className="text-indigo-400 font-bold">1.</span>
-              Upload a photo of your wall
-            </div>
-            <div className="flex gap-2">
-              <span className="text-indigo-400 font-bold">2.</span>
-              Drag the 4 corner dots to mark where the artwork should go
-            </div>
-            <div className="flex gap-2">
-              <span className="text-indigo-400 font-bold">3.</span>
-              See the artwork previewed on your wall!
-            </div>
-          </div>
-        </div>
       </div>
     </main>
   );
