@@ -4,12 +4,19 @@ import { Artwork } from "@/data/artworks";
 interface Props {
   artwork: Artwork;
   onPreview: () => void;
-   isAi?: boolean;
+  isAi?: boolean;
 }
 
-export default function ArtworkCard({ artwork, onPreview }: Props) {
+export default function ArtworkCard({ artwork, onPreview, isAi }: Props) {
   return (
-    <div className="bg-gray-900 rounded-xl overflow-hidden border border-gray-800 hover:border-gray-600 transition-all group">
+    <div className="bg-gray-900 rounded-xl overflow-hidden border border-gray-800 hover:border-gray-600 transition-all group relative">
+      {/* AI Badge */}
+      {isAi && (
+        <div className="absolute top-2 right-2 z-10 bg-indigo-600 text-white text-xs px-2 py-0.5 rounded-full">
+          🤖 AI
+        </div>
+      )}
+
       <div className="relative h-52 overflow-hidden">
         <Image
           src={artwork.imageUrl}
@@ -28,9 +35,13 @@ export default function ArtworkCard({ artwork, onPreview }: Props) {
           <span className="text-green-400 font-bold">৳{artwork.price}</span>
           <button
             onClick={onPreview}
-            className="bg-indigo-600 hover:bg-indigo-500 text-white text-sm px-3 py-1.5 rounded-lg transition-colors"
+            className={`text-white text-sm px-3 py-1.5 rounded-lg transition-colors ${
+              isAi
+                ? "bg-indigo-600 hover:bg-indigo-500"
+                : "bg-violet-700 hover:bg-violet-600"
+            }`}
           >
-            Preview on wall →
+            {isAi ? "🤖 AI Preview →" : "Preview on wall →"}
           </button>
         </div>
       </div>
