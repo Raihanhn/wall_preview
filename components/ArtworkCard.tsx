@@ -4,6 +4,7 @@ import { Artwork } from "@/data/artworks";
 interface Props {
   artwork: Artwork;
   onPreview: () => void;
+   isAi?: boolean;
 }
 
 export default function ArtworkCard({ artwork, onPreview }: Props) {
