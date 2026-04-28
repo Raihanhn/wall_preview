@@ -33,7 +33,7 @@ export default function ArtworkCard({ artwork, onPreview, isAi }: Props) {
           {artwork.width} × {artwork.height} cm
         </p>
         <div className="flex items-center justify-between mt-4">
-          <span className="text-green-400 font-bold">৳{artwork.price}</span>
+          <span className="text-green-400 font-bold">${artwork.price}</span>
           <button
             onClick={onPreview}
             className={`text-white text-sm px-3 py-1.5 rounded-lg transition-colors ${

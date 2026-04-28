@@ -6,7 +6,7 @@ export interface Artwork {
   imageUrl: string;
   width: number;
   height: number;
-  category: "manual" | "ai"; // ← নতুন
+  category: "manual" | "ai"; 
 }
 
 export const artworks: Artwork[] = [
