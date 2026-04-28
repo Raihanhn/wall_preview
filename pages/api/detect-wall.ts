@@ -17,14 +17,12 @@ export default async function handler(
   try {
     const { imageBase64 } = req.body;
 
-    // Base64 থেকে binary বানাও
     const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
     const imageBuffer = Buffer.from(base64Data, "base64");
 
-    // Hugging Face — BRIA Background Removal model
-    // এই model টা wall/background segment করতে ভালো কাজ করে
+    // ✅ সঠিক Hugging Face Inference API URL
     const response = await fetch(
-      "https://api-inference.huggingface.co/models/briaai/RMBG-1.4",
+      "https://router.huggingface.co/hf-inference/models/facebook/maskformer-swin-base-coco",
       {
         method: "POST",
         headers: {
@@ -38,10 +36,9 @@ export default async function handler(
     if (!response.ok) {
       const error = await response.text();
       console.error("HF Error:", error);
-      return res.status(500).json({ error: "AI detection failed" });
+      return res.status(500).json({ error: "AI detection failed", details: error });
     }
 
-    // Response হবে একটা processed image (PNG)
     const arrayBuffer = await response.arrayBuffer();
     const resultBase64 = Buffer.from(arrayBuffer).toString("base64");
 

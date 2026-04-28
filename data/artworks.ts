@@ -26,7 +26,7 @@ export const artworks: Artwork[] = [
     title: "Abstract Bloom",
     artist: "Modern Art",
     price: 3200,
-    imageUrl: "https://images.unsplash.com/photo-1549887534-1541e9326642?w=600",
+    imageUrl: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=600",
     width: 50,
     height: 50,
     category: "manual",
